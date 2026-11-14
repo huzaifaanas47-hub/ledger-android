@@ -16,14 +16,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ledger-android
     steps:
       - uses: actions/checkout@v4
-      - name: Unzip project
-        working-directory: .
-        run: unzip -q ledger-android.zip
+      - name: Find project folder
+        run: |
+          F=$(find . -name capacitor.config.json -not -path "*/node_modules/*" -not -path "*/android/*" | head -1)
+          if [ -z "$F" ]; then echo "capacitor.config.json not found: the project files are not in the repo"; exit 1; fi
+          echo "PROJ=$(dirname "$F")" >> $GITHUB_ENV
+          echo "Project folder: $(dirname "$F")"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -31,17 +31,21 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - run: npm ci
+      - name: Install packages
+        working-directory: ${{ env.PROJ }}
+        run: npm ci
       - name: Configure app
+        working-directory: ${{ env.PROJ }}
         env:
           APP_URL: ${{ inputs.app_url }}
           VERSION_NAME: ${{ inputs.version_name }}
           VERSION_CODE: ${{ inputs.version_code }}
         run: node scripts/configure.js && npx cap sync android
       - name: Build release APK
-        working-directory: ledger-android/android
+        working-directory: ${{ env.PROJ }}/android
         run: ./gradlew assembleRelease --no-daemon
       - name: Sign APK
+        working-directory: ${{ env.PROJ }}
         env:
           KS_B64: ${{ secrets.KEYSTORE_BASE64 }}
           KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -63,4 +67,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Ledger-APK
-          path: ledger-android/Ledger-*.apk
+          path: ${{ env.PROJ }}/Ledger-*.apk
