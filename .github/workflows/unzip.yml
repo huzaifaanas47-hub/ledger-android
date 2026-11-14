@@ -1,0 +1,21 @@
+name: Unzip project
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack
+        run: |
+          unzip -q ledger-android.zip -x "ledger-android/.github/*"
+          cp -a ledger-android/. .
+          rm -rf ledger-android ledger-android.zip
+      - name: Commit files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Unpack Ledger Android project"
+          git push
