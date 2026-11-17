@@ -26,5 +26,15 @@ Repo > Settings > Secrets and variables > Actions: add `KEYSTORE_BASE64`, `KEYST
 * **Maintenance / announcements:** also in the admin panel.
 
 ## 4. Branding
-Edit colours and the logo drawing in `scripts/make-assets.py`, run `pip install pillow && python3 scripts/make-assets.py`, commit. `assets/logo.svg` and `assets/generated/play-store-512.png` are ready for the website and Play Console.
+The logo (open ledger book + rising gold arrow on an emerald tile) lives in `scripts/logo/mark.js`. To change it, edit that file and run
+`npm i --no-save playwright && npx playwright install chromium && node scripts/logo/make-assets.js`
+(it rewrites the launcher icons, adaptive/monochrome icons, splash screens and the website icons in `assets/web/`). Commit the result.
+`assets/logo.svg` and `assets/generated/play-store-512.png` are ready for the website and Play Console.
 Poppins fonts in `assets/fonts` are SIL Open Font License.
+
+
+## 5. Version 1.1.0 changes
+* **Stays signed in**: the app flushes WebView cookies to disk every time it goes to the background (`MainActivity`), and the server issues a long-lived sign-in token, so users log in once and only sign in again after pressing Log out.
+* **Data on the phone**: the website keeps a signed full copy of the user's data inside the app and sends back anything the server lost (see the main project README, "DATA ON THE PHONE"). Android Auto Backup is on (`allowBackup`), so Google can also restore the app's data when the phone is changed.
+* **New logo, splash screen and green theme.**
+* Build it exactly as before; use version name **1.1.0**, version code **2** (the defaults in the workflow), sign with the **same keystore** as 1.0.0 so it installs as an update.

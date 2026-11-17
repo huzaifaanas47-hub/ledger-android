@@ -8,44 +8,31 @@ on:
       version_name:
         description: "Version name, e.g. 1.0.1"
         required: true
-        default: "1.0.0"
+        default: "1.1.0"
       version_code:
         description: "Version code (whole number, must increase every release)"
         required: true
-        default: "1"
+        default: "2"
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Find project folder
-        run: |
-          F=$(find . -name capacitor.config.json -not -path "*/node_modules/*" -not -path "*/android/*" | head -1)
-          if [ -z "$F" ]; then echo "capacitor.config.json not found: the project files are not in the repo"; exit 1; fi
-          echo "PROJ=$(dirname "$F")" >> $GITHUB_ENV
-          echo "Project folder: $(dirname "$F")"
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
+        with: { node-version: 20, cache: npm }
       - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-      - name: Install packages
-        working-directory: ${{ env.PROJ }}
-        run: npm ci
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
       - name: Configure app
-        working-directory: ${{ env.PROJ }}
         env:
           APP_URL: ${{ inputs.app_url }}
           VERSION_NAME: ${{ inputs.version_name }}
           VERSION_CODE: ${{ inputs.version_code }}
         run: node scripts/configure.js && npx cap sync android
       - name: Build release APK
-        working-directory: ${{ env.PROJ }}/android
+        working-directory: android
         run: ./gradlew assembleRelease --no-daemon
       - name: Sign APK
-        working-directory: ${{ env.PROJ }}
         env:
           KS_B64: ${{ secrets.KEYSTORE_BASE64 }}
           KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -57,7 +44,7 @@ jobs:
           if [ -n "$KS_B64" ]; then
             echo "$KS_B64" | base64 -d > release.jks
           else
-            echo "No keystore secrets: using a temporary key (testing only)."
+            echo "No keystore secrets found: signing with a temporary key (fine for sideloading, not for Play Store)."
             keytool -genkeypair -keystore release.jks -storepass android -keypass android -alias key -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Ledger"
             KS_PASS=android; KEY_ALIAS=key
           fi
@@ -67,4 +54,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Ledger-APK
-          path: ${{ env.PROJ }}/Ledger-*.apk
+          path: Ledger-*.apk

@@ -4,8 +4,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">#0F1F3D</item>
-        <item name="colorPrimaryDark">#0A1530</item>
+        <item name="colorPrimary">#0B6B4A</item>
+        <item name="colorPrimaryDark">#064E3B</item>
         <item name="colorAccent">#34D399</item>
     </style>
 
@@ -13,8 +13,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
-        <item name="android:statusBarColor">#0F1F3D</item>
-        <item name="android:navigationBarColor">#0F1F3D</item>
+        <item name="android:statusBarColor">#0B6B4A</item>
+        <item name="android:navigationBarColor">#0B6B4A</item>
     </style>
 
 

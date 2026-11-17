@@ -12,20 +12,20 @@
     ]
   },
   "android": {
-    "appendUserAgent": "LedgerApp/1.0.0 (1)",
+    "appendUserAgent": "LedgerApp/1.1.0 (2)",
     "allowMixedContent": false,
-    "backgroundColor": "#0f1f3d"
+    "backgroundColor": "#0b6b4a"
   },
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 1200,
       "launchAutoHide": true,
-      "backgroundColor": "#0f1f3d",
+      "backgroundColor": "#0b6b4a",
       "androidScaleType": "CENTER_INSIDE",
       "showSpinner": false
     },
     "StatusBar": {
-      "backgroundColor": "#0f1f3d",
+      "backgroundColor": "#0b6b4a",
       "style": "DARK"
     }
   }
